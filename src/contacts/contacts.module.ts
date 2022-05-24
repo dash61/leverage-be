@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { Contact } from 'src/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Contact } from '../typeorm';
 import { ContactsController } from './contacts.controller';
 import { ContactsService } from './contacts.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
 
 
 @Module({
@@ -10,4 +10,5 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   controllers: [ContactsController],
   providers: [ContactsService]
 })
+
 export class ContactsModule {}

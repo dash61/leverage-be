@@ -9,8 +9,8 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { CreateUserDto } from 'src/users/CreateUser.dto';
-import { UsersService } from 'src/users/users.service';
+import { CreateUserDto } from './CreateUser.dto';
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
@@ -37,5 +37,4 @@ export class UsersController {
     this.userService.deleteUser(parseInt(id, 10));
     return `deleted old user = ${id}`;
   }
-
 }

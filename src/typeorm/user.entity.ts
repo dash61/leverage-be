@@ -1,21 +1,23 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, BaseEntity, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Contact } from "./contact.entity";
 
 @Entity()
-export class User {
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn({
     type: 'bigint',
-    name: 'user_id',
+    name: 'id',
   })
   id: number;
   
   @Column({
+    name: 'userName',
     nullable: false,
     default: '',
   })
   userName: string;
 
   @Column({
-    name: 'email_address',
+    name: 'userEmail',
     nullable: false,
     default: '',
   })
@@ -26,4 +28,8 @@ export class User {
     default: '',
   })
   password: string;
+
+  @OneToMany(() => Contact, (contact: Contact) => 
+    contact.contactEmail, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  contacts: Contact[];
 }

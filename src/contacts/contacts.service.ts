@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Contact } from 'src/typeorm';
 import { Repository } from 'typeorm';
-import { CreateContactDto } from 'src/contacts/CreateContact.dto';
+
+import { Contact } from '../typeorm';
+import { CreateContactDto } from './CreateContact.dto';
 
 @Injectable()
 export class ContactsService {
@@ -11,20 +12,47 @@ export class ContactsService {
     private readonly contactRepository: Repository<Contact>,
   ) {}
 
-  create(createContactDto: CreateContactDto) {
+  async create(createContactDto: CreateContactDto) {
+    const exisitingContact = await this.findContactByParams(createContactDto);
+    if (exisitingContact) {
+      throw new BadRequestException('Contact already exists');
+    }
     const newContact = this.contactRepository.create(createContactDto);
-    return this.contactRepository.save(newContact);
+    return await this.contactRepository.save(newContact);
   }
 
-  getContacts() {
-    return this.contactRepository.find();
+  async getContacts() {
+    return await this.contactRepository.find();
   }
 
-  findContactById(id: number) {
-    return this.contactRepository.findByIds([id]);
+  async getContactsForUser(id: number) {
+    const result = await this.contactRepository
+      .createQueryBuilder('contacts')
+      .select('contacts.contactName', 'contactName')
+      .addSelect('contacts.contactEmail', 'contactEmail')
+      .addSelect('contacts.contactPhone', 'contactPhone')
+      .addSelect('contacts.id', 'id')
+      .innerJoin('user', 'usr', `${id}=contacts.user.id`)
+      .distinct()
+      .printSql() 
+      .getRawMany();
+    return result;
   }
 
-  delete(id: number) {
-    return this.contactRepository.delete(id);
+
+  async findContactById(id: number) {
+    return await this.contactRepository.findByIds([id]);
+  }
+
+  async findContactByParams(data: CreateContactDto) {
+    return await this.contactRepository.findOne({
+      contactName: data.contactName,
+      contactEmail: data.contactEmail,
+      contactPhone: data.contactPhone,
+    });
+  }
+
+  async delete(id: number) {
+    return await this.contactRepository.delete(id);
   }
 }

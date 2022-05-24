@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { CreateContactDto } from "./CreateContact.dto";
 import { ContactsService } from "./contacts.service";
-import { Contact } from 'src/typeorm';
+import { Contact } from '../typeorm';
 
 
 @Controller('contacts')
@@ -26,6 +26,11 @@ export class ContactsController {
   @Get('id/:id')
   async findContactById(@Param("id", ParseIntPipe) id: number) {
     return this.contactsService.findContactById(id);
+  }
+
+  @Get('user/:id')
+  getContactsForUser(@Param('id', ParseIntPipe) id: number) {
+    return this.contactsService.getContactsForUser(id);
   }
 
   @Post()

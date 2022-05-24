@@ -1,15 +1,14 @@
 import { Module } from '@nestjs/common';
-// import { AppController } from './app.controller';
-// import { AppService } from './app.service';
-// import { LoginController } from './login/login.controller';
-// import { ContactsController } from './contacts/contacts.controller';
-// import { ContactsService } from './contacts/contacts.service';
+import { ConfigModule, ConfigService } from '@nestjs/config'; // access .env values via ConfigService
+import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { ContactsModule } from './contacts/contacts.module';
 import { UsersModule } from './users/users.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import configuration from './config/configuration';
 import entities from './typeorm';
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -27,16 +26,16 @@ import entities from './typeorm';
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
         entities: entities,
-        synchronize: true,
+        synchronize: true, // don't use this in production
       }),
       inject: [ConfigService],
     }),
     ContactsModule,
     UsersModule,
+    AuthModule,
   ],
-  controllers: [], //[AppController, ContactsController],
-  providers: [], // [AppService, ContactsService],
+  controllers: [AppController],
+  providers: [AppService],
 })
-export class AppModule {}
 
-// access .env values via ConfigService
+export class AppModule {}
